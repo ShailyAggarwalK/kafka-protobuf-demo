@@ -16,7 +16,6 @@ public class DemoConsumer {
 
     @Value("${TOPIC_STRING}") String topicString;
     @Value("${TOPIC_PROTO}") String topicProto;
-
     @Autowired
     private KafkaConsumer<String,  AppointmentProtos.Appointment> kafkaConsumer;
 

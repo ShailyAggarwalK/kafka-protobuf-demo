@@ -15,40 +15,23 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         classes = {DemoApplication.class}
 )
-//@EmbeddedKafka(partitions = 1, ports = {9092}, topics = {"embedded-test-topic"})
+@EmbeddedKafka(partitions = 1, ports = {9092}, topics = {"test-appointment"})
 class DemoProducerIT {
-    @Autowired
-    KafkaConsumer<String, String> testConsumer;
-
     @Autowired
     KafkaConsumer<String,  AppointmentProtos.Appointment> testConsumerProto;
 
     @Autowired
     DemoProducer demoProducer;
-
     @Autowired
     DemoConsumer demoConsumer;
 
-    @Value("${TOPIC_STRING}") String topicString;
     @Value("${TOPIC_PROTO}") String topicProto;
-
-    @Test
-    public void should_send_kafka_messages() {
-        String data = "KAFKA TEST DATA";
-        List<TopicPartition> topicPartitions = new ArrayList<>();
-        topicPartitions.add(new TopicPartition(topicString, 0));
-
-        demoProducer.sendMessage(data);
-        testConsumer.assign(topicPartitions);
-
-        ConsumerRecords<String, String> records = KafkaTestUtils.getRecords(testConsumer);
-
-        records.forEach(it -> System.out.println(it.value()));
-    }
 
     @Test
     void should_send_kafka_proto_message() {
@@ -60,8 +43,9 @@ class DemoProducerIT {
 
         demoProducer.sendMessage(appointment);
         ConsumerRecords<String,  AppointmentProtos.Appointment> records = KafkaTestUtils.getRecords(testConsumerProto);
-        System.out.println("Total records " + records.count());
-        records.forEach(it -> System.out.println(it.value()));
+
+        assertEquals(1, records.count());
+        records.forEach(it -> assertEquals(it.value(), appointment));
     }
 
    // ! ENTERS INFINITE LOOP !
@@ -70,7 +54,6 @@ class DemoProducerIT {
          AppointmentProtos.Appointment appointment =  AppointmentProtos.Appointment.newBuilder().setAppointmentId("A12").setUserName("Ram").setWeekday(AppointmentProtos.Weekday.MONDAY).build();
 
         demoProducer.sendMessage(appointment);
-
         demoConsumer.readMessages();
     }
 }

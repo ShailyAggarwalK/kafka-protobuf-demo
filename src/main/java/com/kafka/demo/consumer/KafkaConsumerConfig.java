@@ -14,7 +14,6 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class KafkaConsumerConfig {
-
     @Value("${BOOTSTRAP_SERVERS_URL}")
     private String bootstrapServers;
     @Value("${SCHEMA_REGISTRY_URL}")

@@ -33,3 +33,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+/src/main/java/com/kafka/demo/consumer/byteArray
+/src/main/java/com/kafka/demo/producer/byteArray
+/src/test/java/com/kafka/demo/byteArray
